@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx4
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+  nodeName: node1

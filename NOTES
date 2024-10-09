@@ -1,0 +1,1233 @@
+Installing Git:
+    
+yum repolist
+yum install git 
+git --version
+ls
+mkdir Code 
+ls
+cd Code/
+ls
+git status        - Check the status of the git repository
+git init               - Initalize the empty folder into a git repository
+git status
+ls -a
+vim file1
+ls
+cat file1 
+git status
+ls
+git status
+git add file1             - Adding the changes in staging area
+git status
+git commit -m "first file1 added"
+git config --global user.email "anshuk6469@gmail.com"
+git config --global user.name "Deepanshu Kumar"
+git config --list                                            - List the configuration settings of Git.
+git commit -m "first file1 added"              - Adding 
+git status
+git log 
+ls
+vim file2
+vim file
+vim file1 
+git status
+git restore file1
+ls
+cat file
+cat file1
+git status
+vim file1 
+git status
+git add .
+git status
+git commit -m "file2 added and file1 modified"
+git status
+ls
+rm file2
+ls
+git status
+git add file2 
+git status
+git commit -m "file2 deleted"
+git log         
+ls
+git checkout 0be4045969 <commit-id>
+git log 
+cat file2
+git checkout master                 - Move your HEAD         
+mv file1 file2
+
+_____________________________________________________________
+
+Remote Repository:
+
+git remote -v
+git remote add origin https://github.com/anshuk6469/Code.git
+git remote -v
+git remote --help
+git branch
+   
+   TO create a token -> Settings -> Developer Settings -> Classic token => Create Token.
+   
+echo ghp_4P73bSnBOKvMNnma3FtDRB > ~/token  
+cat ~/token 
+git status
+git push origin master
+git log
+vim file1 
+git add file1
+git commit -m "file1 modified again 3rd line added"
+git push origin master
+ls
+git log 
+vim file3
+git add .
+git commit -m "file3 added"
+git push origin master
+git log 
+git log --oneline
+git pull origin master
+ls
+git log --oneline
+git reset --soft fb79138 <commit-d>               - commit id of the commit to which I wanted to reset.
+git log --oneline
+ ls
+git status
+git pull origin master
+git restore --staged file3
+git pull origin master
+ls
+git status
+git add .
+git commit -m "file3 added"
+git push origin master
+
+Clone:
+
+cd /
+ls
+git clone https://github.com/anshuk6469/Code.git
+ls
+cd Code/
+ls
+  
+  
+git status
+git log --oneline
+cd ..
+rm -rvf Code/
+
+Git reset:
+    
+git reset --soft    -> take your commited data back to staging area
+git reset --mixed -> take your commited data back to working dir
+git reset --hard ->  remove your commited data
+
+___________________________________________________________________________________________________
+Fast-Forward Merge
+
+  133  git branch
+  134  git branch --all
+  135  git branch dev
+  136  git branch
+  137  git checkout dev
+  138  echo "This is file4" > file4
+  139  cat file4
+  140  git status
+  141  git add .
+  142  git commit -m "file4 added"
+  143  git log --oneline
+  144  ls
+  145  git checkout master
+  146  ls
+  147  git checkout dev
+  148  ls
+  149  git log --oneline --decorate --graph 
+  150  git log --oneline --decorate --graph --all
+  151  git branch
+  152  git checkout master
+  153  git merge dev
+  154  git branch
+  155  git log --oneline --decorate --graph --all
+  156  git push origin master
+
+3-way merge
+  152  git checkout master
+  153  git merge dev
+  154  git branch
+  155  git log --oneline --decorate --graph --all
+  156  git push origin master
+  157  history 
+  158  git branch
+  159  ls
+  160  git checkout dev
+  161  echo "This is file5" > file5
+  162  git add .
+  163  git commit -m "file5 added"
+  164  git log --oneline --decorate --graph --all
+  165  git checkout master
+  166  echo "This is file6" > file6
+  167  git add .
+  168  git commit -m "file6 added"
+  169  git log --oneline --decorate --graph --all
+  170  git checkout master
+  171  git merge dev
+  172  git log --oneline --decorate --graph --all
+_______________________________________
+Tags:
+    
+git tag v1.0.1 -am "This is version1"
+git log --oneline --decorate --graph --all
+git push origin master --tags
+____________________________________________________
+Kubernetes:
+    
+Installing K8s:
+hostnamectl set-hostname node1    
+ip a s
+
+vim /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+172.25.230.225 master
+172.25.230.51 node1
+172.25.230.109 node2
+
+scp /etc/hosts node1:/etc/hosts
+scp /etc/hosts node2:/etc/hosts
+
+
+Open two new tabs in master terminal and 
+ssh node1
+
+on another tab
+ssh node2
+
+( on all the nodes )
+#yum update -y 
+yum install crio kubectl kubeadm kubelet -y  
+systemctl enable --now crio kubelet
+
+Only on master  
+kubeadm init --pod-network-cidr=10.244.0.0/16
+
+On master
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+On worker nodes 
+ kubeadm join 
+ 
+ kubectl get nodes
+Cluster is ready. Now we have to configure calico.
+
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml -O
+gedit calico.yaml
+           press ctrl+h , replace docker.io to quay.io ( replace all ) and save
+kubectl apply -f calico.yaml
+
+kubectl get pods -A
+______________________________________________________________
+
+Pods: 
+    
+vim pod.yaml
+ 
+c
+
+kubectl apply -f pod.yaml 
+kubectl get pods
+kubectl get pods -o wide
+curl http://10.244.104.1
+kubectl describe pod nginx
+kubectl get pods
+
+
+  53  kubectl api-resources
+   54  kubectl explain pod
+   55  kubectl explain pod.spec
+   56  qls
+   57  ls
+   58  kubectl get pods --show-labels
+   59  vim pod.yaml 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    env: prod
+spec:
+  containers:
+  - name: nginx
+    image: anshuk6469/web:v1
+    ports:
+    - containerPort: 80
+
+
+   60  kubectl apply -f pod.yaml 
+   61  vim pod2.yaml 
+   
+   
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx2
+  labels:
+    env: dev
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+    ports:
+    - containerPort: 80
+    
+   62  kubectl apply -f pod2.yaml 
+   63  kubectl get pods --show-labels
+   64  kubectl label pod nginx3 env=test
+   65  kubectl get pods --show-labels
+   66  vim pod2.yaml 
+   67  kubectl get pods 
+   68  kubectl get pods -l env=test
+   69  kubectl get pods -l env!=test
+   70  kubectl get pods -l env in (test,dev)
+   71  kubectl get pods -l 'env in (test,dev)'
+   72  kubectl get pods -l 'env notin (test,dev)'
+   73  kubectl get pods -l 'env'
+   74  kubectl get pods -l '!env'
+   75  vim rc.yaml
+   
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx
+spec:
+  replicas: 5
+  selector:
+    app: nginx
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: quay.io/gauravkumar9130/nginxdemo
+        ports:
+        - containerPort: 80
+
+   76  kubectl create -f rc.yaml 
+   77  kubectl get rc
+   78  kubectl get po
+   79  kubectl get po --show-labels
+   80  kubectl delete pod nginx-8mn4h
+   81  kubectl get po --show-labels
+   82  kubectl delete -f rc.yaml 
+   83  kubectl get po --show-labels
+   84  vim rs.yaml
+   
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # modify replicas according to your case
+  replicas: 5
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: quay.io/gauravkumar9130/production
+
+   85  kubectl create -f rs.yaml 
+   86  kubectl get rs
+   87  kubectl get po
+   88  cat rs.yaml 
+   89  kubectl get po
+   90  cat rs.yaml 
+   91  ls
+   92  vim rs.yaml 
+   93  kubectl delete -f rs.yaml 
+   94  vim rs.yaml 
+   95  kubectl cerate -f rs.yaml 
+   96  kubectl create -f rs.yaml 
+   97  kubectl get pods -o wide
+   98  kubectl get pods --show-labels
+   99  vim cip.yaml
+   
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-cip
+spec:
+  selector:
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  
+   
+  100  kubectl create -f cip.yaml 
+  101  kubectl get svc
+  Get the CIIP and access from browser
+  
+  102  kubectl describe svc my-cip
+  103  ls
+  104  cp cip.yaml node.yaml
+  105  vim node.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-np
+spec:
+  type: NodePort
+  selector:
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001
+
+  106  kubectl create -f node.yaml 
+  107  kubectl get svc
+  Try to access you app on http://master:30001 
+  node1:30001
+  node2:30001
+  
+  108  wget https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+  109  kubectl create -f metallb-native.yaml
+  110  kubectl get ns
+  111  kubectl get all -n metallb-native.yaml 
+  112  kubectl get all -n metallb-system
+
+
+LoadBalancer:
+    
+    
+MetalLB
+
+wget https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+ls
+kubectl create -f metallb-native.yaml
+kubectl get ns
+kubectl get pods -n metallb-system
+
+vim ip-pool.yaml
+
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+ name: first-pool
+ namespace: metallb-system
+spec:
+ addresses:
+ - 172.25.230.10 - 172.25.230.30
+
+kubectl create -f ip-pool.yaml 
+
+vim lb.yaml 
+apiVersion: v1
+kind: Service
+metadata:
+  name: deep-lb
+spec:
+  type: LoadBalancer
+  selector:
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+
+kubectl get svc
+
+
+Manual Scheduling:
+    
+vim nodename.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx4
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+  nodeName: node1
+
+kubectl create -f nodename.yaml 
+kubectl get pods -o wide
+kubectl get nodes --show-labels
+kubectl label node node2 disk=ssd
+kubectl get nodes --show-labels
+vim nodesec.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx5
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+    imagePullPolicy: IfNotPresent
+  nodeSelector:
+    disk: ssd
+
+  139  kubectl create -f nodesec.yaml 
+  140  kubectl get pods -o wide
+  141  kubectl taint node node2 cpu=low:NoExecute
+  142  kubectl get pods -o wide
+  143  vim tolerate.yaml
+  
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+    imagePullPolicy: IfNotPresent
+  tolerations:
+  - key: "cpu"
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx4
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+  nodeName: node1
+    operator: "Exists"
+    effect: "NoExecute"
+
+  144  kubectl create -f tolerate.yaml 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx4
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+  nodeName: node1
+  145  kubectl get pods
+  146  kubectl get pods -o wide
+  147  kubectl taint node node2 cpu=low:NoExecute-
+  148  kubectl desccribe node master
+  149  kubectl describe node master
+  
+  _________________________________________________________________________________
+  
+  Deployment:
+
+161  vim dep.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: quay.io/gauravkumar9130/production:v1
+        ports:
+        - containerPort: 80
+
+  162  kubectl delete svc --all
+  163  kubectl get svc
+  164  cat dep.yaml 
+  165  vim lb.yaml 
+  
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-lb
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+
+  166  kubectl create -f lb.yaml 
+  167  kubectl create -f dep.yaml 
+  168  kubectl get pods
+  169  kubectl get rs
+  172  kubectl get deployments
+  173  vim dep.yaml 
+      image: quay.io/gauravkumar9130/production:v2
+      
+  174  kubectl get svc
+  175  kubectl scale deployment nginx-deployment --replicas=5
+  176  kubectl get deployments
+  177  kubectl get pods
+  178  kubectl apply -f dep.yaml 
+  179  kubectl get deployments
+  180  vim dep.yaml 
+      image: quay.io/gauravkumar9130/production:v3
+      
+  181  kubectl apply -f dep.yaml 
+  182  kubectl get deployments
+  183  kubectl get rs
+  184  kubectl describe deployment nginx-deployment
+  185  kubectl rollout history deployment nginx-deplyment
+  186  kubectl rollout history deployment nginx-deployment
+  187  vim dep.yaml 
+  
+  image: quay.io/gauravkumar9130/production:v4
+ 
+  189  kubectl apply -f dep.yaml 
+  190  kubectl get deployments
+  191  kubectl rollout history deployment nginx-deployment
+  192  echo 'source <(kubectl completion bash)' >>~/.bashrc
+  193  source ~/.bashrc 
+  194  kubectl get deployments.apps 
+  195  kubectl get rs
+  196  kubectl rollout undo deployment nginx-deployment --to-revision 1
+
+_____________________________________________________________________________________________
+
+ 201  vim plain.yaml
+ 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envar-plain
+  labels:
+    purpose: demonstrate-envars
+spec:
+  containers:
+  - name: mysql
+    image: quay.io/gauravkumar9130/mysql
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "redhat"
+
+
+  202  kubectl create -f plain.yaml 
+  203  kubectl get pods
+  204  kubectl exec -it envar-plain -- bash
+        mysql -u root -p
+        redhat
+        mysql> SHOW DATABASES;
+        mysql>exit
+    exit
+    
+  205  kubectl get pods
+  206  cat plain.yaml 
+  207  vim config.yaml
+  
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cm
+data:
+  MYSQL_ROOT_PASSWORD: "redhat"
+
+  208  kubectl create -f config.yaml 
+  209  kubectl get cm
+  210  kubectl describe cm mysql-cm 
+  211  vim cmpod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-pod
+spec:
+  containers:
+    - name: mysql
+      image: quay.io/gauravkumar9130/mysql
+      envFrom:
+      - configMapRef:
+          name: mysql-cm
+
+  212 cat cmpod.yaml 
+  213  kubectl create -f cmpod.yaml 
+  214  kubectl get pods
+  215  echo redhat | base64
+  216  kubectl create secret generic mysql-sec --from-literal=MYSQL_ROOT_PASSWORD=redhat
+  217  kubectl get secrets 
+  218  kubectl describe secrets mysql-sec 
+  219  kubectl get secrets -o yaml
+  220  echo cmVkaGF0 | base64 -d
+  221  cp cmpod.yaml secpod.yaml
+  222  vim secpod.yaml 
+  
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sec-pod
+spec:
+  containers:
+    - name: mysql
+      image: quay.io/gauravkumar9130/mysql
+      envFrom:
+      - secretRef:
+          name: mysql-sec
+
+  223  kubectl create -f secpod.yaml 
+  224  kubectl get pods
+
+____________________________________________________________________________________________
+
+  233  vim config-vol.yaml 
+  
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-vol
+data:
+  issue: |
+    This is the issue file
+    182.78.192.68 master
+    182.78.191.53 node1
+    182.78.190.67 node2
+
+  234  kubectl create -f config
+  235  kubectl create -f config-vol.yaml 
+  236  kubectl get configmaps 
+  237  kubectl describe configmaps mysql-vol 
+  238  ls
+  239  vim vol-cmpod.yaml
+  
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volcm-pod
+spec:
+  containers:
+    - name: nginx
+      image: quay.io/gauravkumar9130/nginxdemo
+      volumeMounts:
+      - name: config-volume
+        mountPath: /data
+  volumes:
+    - name: config-volume
+      configMap:
+        name: mysql-vol
+
+
+  240  kubectl get configmaps 
+  241  vim vol-cmpod.yaml
+  242  kubectl create -f vol-cmpod.yaml 
+  243  kubectl get pods
+  244  kubectl exec -it volcm-pod -- sh
+
+______________________________________________________________________________________
+
+Volume:
+    
+vim pv.yaml
+  
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+
+
+
+  259  kubectl create -f pv.yaml 
+  260  kubectl get pv
+  261  vim pvclaim.yaml
+  
+  
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+      
+  262  kubectl create -f pvclaim.yaml 
+  263  kubectl get pv
+  264  kubectl get pvc
+  265  vim podvol.yaml
+  
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-pv-pod
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+        claimName: task-pv-claim
+  containers:
+    - name: task-pv-container
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/data"
+          name: task-pv-storage
+          
+  266  kubectl create -f podvol.yaml 
+  267  kubectl get pods -o wide
+  268  kubectl exec -it task-pv-pod -- sh
+  
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  Security:
+  
+  272  less $HOME/.kube/config
+  273  ls
+  274  kubectl get pods
+  275  git clone https://github.com/gauravkumar9130/kube-user.git
+  276  ls
+  277  cd kube-user/
+  278  less user_script.sh 
+  279  chmod +x user_script.sh 
+  280  ls
+  281  ./user_script.sh 
+      namespace default
+      username student
+      password student
+  282  su - student
+            kubectl get pods
+            exit
+  283  kubectl get ns
+  284  kubectl get pods
+  285  kubectl get pods -n kube-system
+  286  cd ..
+  287  vim role.yaml
+  
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+
+  288  kubectl create -f role.yaml 
+  289  vim rolebind.yaml
+  
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "jane" to read pods in the "default" namespace.
+# You need to already have a Role named "pod-reader" in that namespace.
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+# You can specify more than one "subject"
+- kind: User
+  name: student # "name" is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: Role #this must be Role or ClusterRole
+  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+  290  kubectl create -f rolebind.yaml 
+  291  kubectl get rolebindings.rbac.authorization.k8s.io 
+  293  kubectl get rolebindings.rbac.authorization.k8s.io -A
+  294  kubectl get clusterrolebindings.rbac.authorization.k8s.io 
+  295  kubectl get rolebindings.rbac.authorization.k8s.io 
+  296  su - student
+        kubectl get pods
+        kubectl get pods -n kube-system
+        exit
+  297  kubectl get clusterrole
+  298  kubectl describe clusterrole cluster-admin
+  299  kubectl describe clusterrole view
+  300  vim clusterrolebind.yaml
+  
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: read-global
+subjects:
+- kind: User
+  name: student # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+
+  301  kubectl create -f clusterrolebind.yaml 
+  302  su - student
+        kubectl get pods
+        kubectl get pods -n kube-system
+        kubectl get rs
+        exit
+  303  kubectl get all -n metallb-system 
+  304  kubectl get serviceaccounts -n metallb-system 
+  305  kubectl get rolebindings.rbac.authorization.k8s.io -n metallb-system 
+  306  kubectl get clusterrolebindings.rbac.authorization.k8s.io 
+  307  kubectl get rolebindings.rbac.authorization.k8s.io -n metallb-system 
+  309  kubectl describe rolebindings.rbac.authorization.k8s.io controller -n metallb-system
+  310  ls
+  311  less metallb-native.yaml 
+  312  kubectl get sa
+  313  kubectl create sa view
+  314  kubectl get sa
+
+To use a different sa in a pod other than default
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx4
+spec:
+  containers:
+  - name: nginx
+    image: quay.io/gauravkumar9130/nginxdemo
+  serviceAccountName: view
+____________________________________
+To to permission to your service account
+
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: read-global
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+  
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+Security Context:
+    
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-pod
+spec:
+  securityContext:
+    runAsUser: 1000        # Container will run as user 1000
+    runAsGroup: 3000       # Container will run with group 3000
+    fsGroup: 2000          # All files created by the container will be owned by group 2000
+  containers:
+  - name: secure-container
+    image: nginx           # Running a simple NGINX container
+    securityContext:
+      capabilities:
+        drop:
+        - ALL              # Drop all capabilities
+      allowPrivilegeEscalation: false   # Prevent privilege escalation
+      readOnlyRootFilesystem: true      # Root filesystem will be read-only
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  volumes:
+  - name: data
+    emptyDir: {}
+
+___________________________________________________
+  323  vim seccon.yaml
+  
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-context-demo
+spec:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 3000
+    fsGroup: 2000
+    supplementalGroups: [4000]
+  volumes:
+  - name: sec-ctx-vol
+    emptyDir: {}
+  containers:
+  - name: sec-ctx-demo
+    image: busybox:1.28
+    command: [ "sh", "-c", "sleep 1h" ]
+    volumeMounts:
+    - name: sec-ctx-vol
+      mountPath: /data/demo
+    securityContext:
+      allowPrivilegeEscalation: false
+
+  324  kubectl create -f seccon.yaml 
+  325  kubectl get pods
+  326  kubectl exec -it security-context-demo -- sh
+          id
+          ps -ef
+          
+  327  kubectl get pods
+  328  kubectl get pods -o wide
+  329  kubectl exec -it security-context-demo -- sh
+
+
+_____________________________
+To see the attaches capabilities on your running container 
+you can inspect the container
+crictl ps
+crictl inspect container-id
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Jekins - DevOps
+
+On master
+yum update -y
+yum install jenkins docker -y
+systemctl daemon-reload
+systemctl enable --now jenkins
+
+wget https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz -P /tmp
+tar xf /tmp/apache-maven-*.tar.gz -C /opt
+vim ~/.bashrc
+export MAVEN_HOME=/opt/apache-maven-3.9.4
+export PATH=/opt/apache-maven-3.9.4/bin:${PATH}
+source ~/.bashrc
+
+Check Everything:
+mvn -version
+java -version
+systemctl status Jenkins
+kubectl get nodes
+docker --version
+
+MicroService: Lab
+systemctl stop jenkins
+
+code --no-sandbox --user-data-dir=/home/student
+ls
+docker run -p 5000:5000 quay.io/anshuk6469/node-service 
+
+On the other Tab
+git clone https://github.com/anshuk6469/DevSecOps-K8s.git
+ls
+cd DevSecOps-K8s/
+mvn clean package
+ls
+ls target/
+java -jar target/numeric-0.0.1.jar 
+systemctl stop jenkins
+java -jar target/numeric-0.0.1.jar 
+Ctrl+C
+docker ps
+docker stop name
+docker rm name
+
+systemctl start jenkins
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Create some Jobs in Jenkins:
+    
+Basic freestyle job
+SCM -> https://github.com/anshuk6469/Angular1.3-Project.git
+Execute Shell
+pwd
+ls
+whoami
+
+To create a webserver jobs:
+    
+vim /etc/sudoers.d/jenkins
+jenkins ALL=(ALL) NOPASSWD: ALL
+
+Create a freestyle job
+SCM -> https://github.com/anshuk6469/Angular1.3-Project.git
+
+Execute Shell
+sudo yum install httpd -y
+sudo systemctl enable --now httpd
+sudo cp -rvf * /var/www/html
+
+Build Job
+
+To create Pipeline Jobs:
+For Maven job you have to configure maven tool first
+Manage jenkins -> Tools -> Add Maven Tool -> Uncheck download automatically -> Give tool name "maven_new" and add maven home path same as your bashrc
+Create Pipeline -> Choose template -> Git + Maven
+change your tool name in the pipeline "maven_new".
+Build
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+DevOps Pipeline & DevSecOps Pipeline.
+
+Download Plugins
+
+Pipeline: Stage View   
+Docker 
+Docker Pipeline 
+Performance        
+OWASP Dependency-Check 
+BlueOcean
+Jacoco
+SonarQube Scanner   
+Sonar Quality Gates   
+PIT Mutation
+Kubernetes CLI                                   
+
+DevOps Pipeline:
+
+yum remove docker -y
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install docker-ce -y
+systemctl enable --now docker
+usermod -aG docker jenkins
+ usermod -aG docker student
+systemctl daemon-reload 
+
+kubectl create deploy node-app --image quay.io/anshuk6469/node-service
+kubectl expose deploy node-app --name node-service --port 5000 --type ClusterIP
+
+You should have an account on quay.io. Account Settings -> Generate CLI Password
+Create a Public Repostiory named  numeric-app
+
+Create Credentials Docker
+Manage jenkins -> Credentials -> Jenkins -> Global Credentials -> Add Credentials -> Username & Password type
+add the username and password from quay.io 
+name the id -> docker-hub
+
+Create Credentials - K8s
+Manage jenkins -> Credentials -> Jenkins -> Global Credentials -> Add Credentials -> Secret file
+Browse the config file from the browse windows . Press Ctrl+h to see the hidden folders in browse window. 
+name the iD-> kubeconfig
+
+Create a new Jenkins pipeline Job
+
+    Configure Poll SCM -> */2 * * * *
+
+Pipeline from SCM
+https://github.com/anshuk6469/DevSecOps-K8s.git   -Use Forked . Change the username    (   sh 'sudo docker build -t quay.io/anshuk6469/numeric-app:""$GIT_COMMIT"" .'
+                                                                                                               in docker build stage                 sh 'docker push quay.io/anshuk6469/numeric-app:""$GIT_COMMIT""' ) 
+Branch -> main
+
+Save: Run Pipeline 
+
+____________________________________________________________________________________________________________________________________________________________
+
+DevSecOps:
+
+Deploying Talisman:
+
+  451  bash -c "$(curl --silent https://raw.githubusercontent.com/thoughtworks/talisman/main/install.sh)"
+  452  ls
+  453  cd Code/
+  454  cd my-git-project
+  455  echo "talisman -g pre-commit" >> .git/hooks/pre-commit
+  456  chmod +x .git/hooks/pre-commit
+  457  echo "talisman -g pre-commit" >> .git/hooks/pre-commit
+  458  chmod +x .git/hooks/pre-commit
+  459  ls
+  460  echo "username=anshuk6469" > file1
+  461  echo "secure-password" > password.txt
+  462  echo 
+  463  echo "apikey=d090b887167bd67hfsd8hn8dfdfhbn" > file2
+  464  echo "base64encodedsecret=SGVsbG8gd29ybGQK > file3
+  465  echo "base64encodedsecret=SGVsbG8gd29ybGQK" > file3
+  466  git status
+  467  git add .
+  468  git commit -m "new changes added"
+  469  git config --global user.email "anshuk6469@gmail.com"
+  470  git config --global user.name "Deepanshu Kumar"
+  471  git commit -m "new changes added"
+    
+    
+__________________________________________________________________________________
+DevSecOps Pipeline : Create a devsecops Pipeline in your enviornment
+
+docker run -itd --name sonar -p 9000:9000 quay.io/anshuk6469/sonarqube
+Run sonarqube app on port 9000
+admin
+admin
+
+Create manual project "numeric-application" with manual token for maven.
+#you will get one command append it to your pipeline as a stage
+
+Go in sonarkuber -> Profile -> Security -> Create a new token save that token in above credentials.
+Create Credentials - SonarQube
+Manage jenkins -> Credentials -> Jenkins -> Global Credentials -> Add Credentials -> Secret text
+Browse the config file from the browse windows . Press Ctrl+h to see the hidden folders in browse window. 
+name the iD-> SonarQube
+Go in Manage Jenkins -> System -> Add SonarQube -> Give name " SonarQube" -> http://localhost:9000 -> Choose Credentials
+
+
+
+Fork: https://github.com/anshuk6469/DevSecOps-Zap-Fix.git
+Change the application URL with your own master IP 
+Create a new Jenkins pipeline Job
+
+    Configure Poll SCM -> */2 * * * *
+
+Pipeline from SCM
+https://github.com/anshuk6469/DevSecOps-K8s.git   -Use Forked
+Branch -> main
+Save: Run Pipeline 
+
+
+Question: You are tasked with creating a Jenkins pipeline for a DevSecOps project that automates the following stages:
+Build: Use Maven to build a Java application, skipping tests during the build.
+Unit Tests: Run the unit tests using Maven and generate test reports.
+Mutation Testing: Use PIT (Pitest) for mutation testing.
+Static Code Analysis: Integrate SonarQube for static application security testing (SAST) and ensure the pipeline fails if the SonarQube quality gate does not pass.
+Vulnerability Scanning: Perform a dependency vulnerability scan using mvn dependency-check and scan the Docker image with Trivy.
+Docker Build and Push: Build a Docker image of the application and push it to a Docker registry.
+Kubernetes Deployment: Deploy the application to a Kubernetes cluster.
+Dynamic Application Security Testing (DAST): Run an OWASP ZAP scan to check for vulnerabilities in the deployed application and publish the results.
+
+
+

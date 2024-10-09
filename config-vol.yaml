@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-vol
+data:
+  issue: |
+    This is the issue file
+    182.78.192.68 master
+    182.78.191.53 node1
+    182.78.190.67 node2
